@@ -1,3 +1,3 @@
-# solana-lottery
+# JackpotSol - Solana Lottery Program
 
-Lottery System build on Solana
+## Underdevelopment.....
