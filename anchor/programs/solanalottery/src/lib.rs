@@ -10,7 +10,7 @@ pub mod states;
 use instructions::*;
 use states::*;
 
-declare_id!("AsjZ3kWAUSQRNt2pZVeJkywhZ6gpLpHZmJjduPmKZDZZ");
+declare_id!("8aKi1kr5gcYcBSxBcnF5mXiuKk3rJBKagJxRwxDMWQBH");
 
 #[program]
 pub mod solanalottery {
@@ -25,6 +25,11 @@ pub mod solanalottery {
         price: u64,
     ) -> Result<()> {
         instructions::initialize_config(_ctx, lottery_id, start, end, price)?;
+        Ok(())
+    }
+
+    pub fn initialize_lottery(_ctx: Context<InitializeLottery>) -> Result<()> {
+        instructions::initialize_lottery(_ctx)?;
         Ok(())
     }
 }
