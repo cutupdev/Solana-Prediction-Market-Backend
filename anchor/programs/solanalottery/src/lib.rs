@@ -32,4 +32,24 @@ pub mod solanalottery {
         instructions::initialize_lottery(_ctx)?;
         Ok(())
     }
+
+    pub fn buy_tickets(_ctx: Context<BuyTickets>, lottery_id: u64) -> Result<()> {
+        instructions::buy_tickets(_ctx, lottery_id)?;
+        Ok(())
+    }
+
+    pub fn commit_a_winner(_ctx: Context<CommitWinner>, lottery_id: u64) -> Result<()> {
+        instructions::commit_a_winner(_ctx, lottery_id)?;
+        Ok(())
+    }
+
+    pub fn choose_winner(_ctx: Context<ChooseWinner>, _lottery_id: u64) -> Result<()> {
+        instructions::choose_winner(_ctx, _lottery_id)?;
+        Ok(())
+    }
+
+    pub fn claim_prize(_ctx: Context<ClaimPrize>, _lottery_id: u64) -> Result<()> {
+        instructions::claim_prize(_ctx, _lottery_id)?;
+        Ok(())
+    }
 }
