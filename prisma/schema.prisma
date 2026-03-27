@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Off-chain CLOB market keyed by chain PDA or internal id
+model Market {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  /// Optional on-chain market account address (base58)
+  chainMarketPda    String?
+  question          String
+  description       String?
+  /// YES / NO mints when created on-chain (base58)
+  yesMint           String?
+  noMint            String?
+  collateralMint    String?
+  /// Resolution timestamp (UTC)
+  resolvesAt        DateTime?
+  status            MarketStatus @default(ACTIVE)
+  winningOutcome    Outcome?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  orders Order[]
+  trades Trade[]
+}
+
+enum MarketStatus {
+  ACTIVE
+  PAUSED
+  RESOLVED
+  CANCELLED
+}
+
+enum Outcome {
+  YES
+  NO
+}
+
+enum OrderSide {
+  BID
+  ASK
+}
+
+/// Outcome token being quoted (YES or NO leg of the market)
+enum OutcomeLeg {
+  YES
+  NO
+}
+
+enum OrderStatus {
+  OPEN
+  PARTIALLY_FILLED
+  FILLED
+  CANCELLED
+}
+
+/// Limit order in the off-chain orderbook; settlement txs built separately
+model Order {
+  id              String      @id @default(cuid())
+  marketId        String
+  market          Market      @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  ownerPubkey     String
+  leg             OutcomeLeg
+  side            OrderSide
+  /// Price in basis points: 1 = 0.01%, 10000 = 100%
+  priceBps        Int
+  /// Remaining size in smallest collateral unit (e.g. lamports or USDC micro)
+  sizeRemaining   BigInt
+  sizeOriginal    BigInt
+  status          OrderStatus @default(OPEN)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  makerTrades Trade[] @relation("MakerOrder")
+  takerTrades Trade[] @relation("TakerOrder")
+
+  @@index([marketId, status, leg, side, priceBps])
+  @@index([ownerPubkey])
+}
+
+model Trade {
+  id           String   @id @default(cuid())
+  marketId     String
+  market       Market   @relation(fields: [marketId], references: [id], onDelete: Cascade)
+  makerOrderId String
+  makerOrder   Order    @relation("MakerOrder", fields: [makerOrderId], references: [id], onDelete: Cascade)
+  takerOrderId String
+  takerOrder   Order    @relation("TakerOrder", fields: [takerOrderId], references: [id], onDelete: Cascade)
+  priceBps     Int
+  size         BigInt
+  createdAt    DateTime @default(now())
+
+  @@index([marketId, createdAt])
+}
+
+/// Optional: track submitted settlement signatures for idempotency / UI history
+model OnChainSettlement {
+  id            String   @id @default(cuid())
+  marketId      String
+  signature     String   @unique
+  slot          BigInt?
+  createdAt     DateTime @default(now())
+}

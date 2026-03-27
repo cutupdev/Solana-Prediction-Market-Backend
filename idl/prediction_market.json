@@ -1,0 +1,60 @@
+{
+  "address": "YourProgramId1111111111111111111111111111111",
+  "metadata": {
+    "name": "prediction_market",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Replace this file with output of: anchor idl build -o idl/prediction_market.json"
+  },
+  "instructions": [
+    {
+      "name": "initializeMarket",
+      "discriminator": [0, 0, 0, 0, 0, 0, 0, 0],
+      "accounts": [
+        { "name": "market", "writable": true, "signer": false },
+        { "name": "authority", "writable": true, "signer": true },
+        { "name": "systemProgram", "address": "11111111111111111111111111111111" }
+      ],
+      "args": [
+        { "name": "questionHash", "type": { "array": ["u8", 32] } },
+        { "name": "resolvesAtTs", "type": "i64" }
+      ]
+    },
+    {
+      "name": "placeOnChainOrder",
+      "discriminator": [1, 1, 1, 1, 1, 1, 1, 1],
+      "accounts": [
+        { "name": "market", "writable": true, "signer": false },
+        { "name": "user", "writable": true, "signer": true }
+      ],
+      "args": [
+        { "name": "legYes", "type": "bool" },
+        { "name": "sideBid", "type": "bool" },
+        { "name": "priceBps", "type": "u16" },
+        { "name": "size", "type": "u64" }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Market",
+      "discriminator": [2, 2, 2, 2, 2, 2, 2, 2]
+    }
+  ],
+  "events": [],
+  "errors": [],
+  "types": [
+    {
+      "name": "Market",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          { "name": "authority", "type": "pubkey" },
+          { "name": "bump", "type": "u8" },
+          { "name": "resolvesAtTs", "type": "i64" },
+          { "name": "status", "type": "u8" }
+        ]
+      }
+    }
+  ]
+}

@@ -1,1 +1,0 @@
-export const PACK_COLLECTION = "h4afHtNhsDnpizwDx4pry2CaVMgB6BStFp1L7yzToFA"
